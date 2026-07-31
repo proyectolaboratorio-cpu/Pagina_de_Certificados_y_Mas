@@ -121,7 +121,7 @@
   const icon      = $('#musicIcon');
   const slider    = $('#volumeSlider');
   const label     = $('#musicVolume');
-
+  /*
   if (audio) {
     audio.volume = (slider?.value ?? 15) / 100;
 
@@ -189,6 +189,62 @@
     document.addEventListener('keydown', tryOnFirstGesture, { once: true });
     document.addEventListener('touchstart', tryOnFirstGesture, { once: true });
   }
+  */
+   if (audio) {
+  audio.volume = (slider?.value ?? 15) / 100;
+  audio.muted = true;  // arranca silencioso
+
+  let isPlaying = false;
+
+  function updateIcon() {
+    if (!icon) return;
+    if (audio.paused) {
+      icon.textContent = '🔇';  // silenciado
+      toggle?.setAttribute('aria-label', 'Activar música');
+    } else if (audio.muted) {
+      icon.textContent = '🔈';  // reproduciendo silenciado
+      toggle?.setAttribute('aria-label', 'Activar sonido');
+    } else {
+      icon.textContent = '⏸';  // sonando
+      toggle?.setAttribute('aria-label', 'Pausar música');
+    }
+  }
+
+  // Intentar arrancar en silencio apenas carga la página
+  audio.play().then(() => {
+    isPlaying = true;
+    updateIcon();
+  }).catch(() => {
+    // El navegador bloqueó incluso el silencioso (raro, pero pasa)
+    isPlaying = false;
+    updateIcon();
+  });
+
+  // Click en el botón del widget
+  toggle?.addEventListener('click', () => {
+    if (audio.paused) {
+      audio.muted = false;
+      audio.play().then(() => {
+        isPlaying = true;
+        updateIcon();
+      });
+    } else if (audio.muted) {
+      audio.muted = false;
+      updateIcon();
+    } else {
+      audio.pause();
+      isPlaying = false;
+      updateIcon();
+    }
+  });
+
+  // Control de volumen
+  slider?.addEventListener('input', () => {
+    const v = parseInt(slider.value, 10);
+    audio.volume = v / 100;
+    if (label) label.textContent = `${v}%`;
+  });
+} 
 
   /* =========================================
      FOOTER — Año dinámico
