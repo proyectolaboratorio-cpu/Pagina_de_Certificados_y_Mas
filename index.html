@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil Profesional | [Tu Nombre Aquí]</title>
+  <meta name="description" content="Portafolio profesional: CV, certificados, artículos y proyectos de investigación." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%231e3a5f'/%3E%3Ctext x='50' y='65' font-family='Georgia' font-size='55' font-weight='bold' text-anchor='middle' fill='%23f59e0b'%3E%26%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+  <!-- ============== HEADER / NAV ============== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#inicio" class="brand">
+        <span class="brand-mark">&amp;.</span>
+        <span class="brand-text">
+          <span class="brand-name">Tu Nombre Aquí</span>
+          <span class="brand-role">Investigador · Profesional</span>
+        </span>
+      </a>
+
+      <nav class="primary-nav" aria-label="Navegación principal">
+        <button class="nav-link" data-open="inicio">Inicio</button>
+        <button class="nav-link" data-open="cv">CV</button>
+        <button class="nav-link" data-open="certificados">Certificados</button>
+        <button class="nav-link" data-open="articulos">Artículos</button>
+        <button class="nav-link" data-open="investigacion">Investigación</button>
+        <button class="nav-link" data-open="perfiles">Perfiles</button>
+        <button class="nav-link" data-open="contacto">Contacto</button>
+      </nav>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============== HERO ============== -->
+  <main>
+    <section id="inicio" class="hero">
+      <div class="container hero-inner">
+        <div class="hero-text">
+          <p class="hero-eyebrow">Portafolio Profesional</p>
+          <h1 class="hero-title">
+            Construyendo conocimiento a través de la
+            <span class="accent">investigación</span> y la innovación.
+          </h1>
+          <p class="hero-lead">
+            Soy <strong>[Tu Nombre Aquí]</strong>, profesional en [tu área disciplinar].
+            Esta página reúne mi trayectoria académica, certificaciones, publicaciones y proyectos
+            de investigación. Explora cada sección para conocer más.
+          </p>
+
+          <div class="hero-cta">
+            <button class="btn btn-primary" data-open="cv">Ver mi CV</button>
+            <button class="btn btn-ghost" data-open="contacto">Contactar</button>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <span class="stat-num">+10</span>
+              <span class="stat-label">Años de experiencia</span>
+            </div>
+            <div class="stat">
+              <span class="stat-num">+15</span>
+              <span class="stat-label">Publicaciones</span>
+            </div>
+            <div class="stat">
+              <span class="stat-num">+5</span>
+              <span class="stat-label">Proyectos de investigación</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card" aria-hidden="true">
+          <div class="hero-card-inner">
+            <div class="avatar">YN</div>
+            <h3>Tu Nombre Aquí</h3>
+            <p class="hero-card-sub">[Cargo / Título profesional]</p>
+            <ul class="hero-card-list">
+              <li><span>📍</span> Ciudad, País</li>
+              <li><span>✉️</span> tu.correo@ejemplo.com</li>
+              <li><span>🎓</span> [Tu grado académico]</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============== QUICK ACCESS CARDS ============== -->
+    <section class="quick-access">
+      <div class="container">
+        <h2 class="section-title">Acceso rápido</h2>
+        <p class="section-sub">Selecciona una sección para abrirla en una ventana dentro de esta misma página.</p>
+
+        <div class="card-grid">
+          <button class="access-card" data-open="cv">
+            <div class="access-icon">📄</div>
+            <h3>CV</h3>
+            <p>Hoja de vida con formación, experiencia y habilidades.</p>
+          </button>
+          <button class="access-card" data-open="certificados">
+            <div class="access-icon">🏅</div>
+            <h3>Certificados</h3>
+            <p>Diplomas, cursos y reconocimientos académicos.</p>
+          </button>
+          <button class="access-card" data-open="articulos">
+            <div class="access-icon">📚</div>
+            <h3>Artículos</h3>
+            <p>Publicaciones en revistas y conferencias indexadas.</p>
+          </button>
+          <button class="access-card" data-open="investigacion">
+            <div class="access-icon">🔬</div>
+            <h3>Investigación</h3>
+            <p>Proyectos y líneas de investigación en desarrollo.</p>
+          </button>
+          <button class="access-card" data-open="perfiles">
+            <div class="access-icon">🌐</div>
+            <h3>Perfiles profesionales</h3>
+            <p>LinkedIn, ORCID, Google Scholar y más.</p>
+          </button>
+          <button class="access-card" data-open="contacto">
+            <div class="access-icon">✉️</div>
+            <h3>Contacto</h3>
+            <p>Información para colaborar o escribirme.</p>
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============== FOOTER ============== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© <span id="year"></span> Tu Nombre Aquí · Portafolio profesional</p>
+      <p class="footer-mini">Hecho con HTML, CSS y JavaScript.</p>
+    </div>
+  </footer>
+
+  <!-- ============== MUSIC WIDGET ============== -->
+  <div class="music-widget" id="musicWidget">
+    <button class="music-toggle" id="musicToggle" aria-label="Reproducir música" title="Reproducir / pausar música">
+      <span class="music-icon" id="musicIcon">▶</span>
+    </button>
+    <div class="music-controls">
+      <label for="volumeSlider" class="visually-hidden">Volumen</label>
+      <input type="range" id="volumeSlider" min="0" max="100" value="15" aria-label="Volumen" />
+      <span class="music-volume" id="musicVolume">15%</span>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: CV ============== -->
+  <div class="modal" id="modal-cv" role="dialog" aria-modal="true" aria-labelledby="cv-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window">
+      <header class="modal-head">
+        <h2 id="cv-title">Curriculum Vitae</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body pdf-body">
+        <iframe src="assets/cv/cv.pdf#toolbar=1" title="Vista previa del CV"></iframe>
+      </div>
+      <footer class="modal-foot">
+        <a class="btn btn-primary" href="assets/cv/cv.pdf" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+        <a class="btn btn-ghost" href="assets/cv/cv.pdf" download>Descargar CV</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: CERTIFICADOS ============== -->
+  <div class="modal" id="modal-certificados" role="dialog" aria-modal="true" aria-labelledby="cert-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window modal-window-wide">
+      <header class="modal-head">
+        <h2 id="cert-title">Certificados</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body">
+        <ul class="cert-list">
+          <li>
+            <button class="cert-item" data-pdf="assets/certificates/certificado-1.pdf" data-name="Certificado 1">
+              <span class="cert-badge">01</span>
+              <span class="cert-info">
+                <strong>Certificado de ejemplo 1</strong>
+                <small>Curso / Diplomado — 2024</small>
+              </span>
+              <span class="cert-arrow">›</span>
+            </button>
+          </li>
+          <li>
+            <button class="cert-item" data-pdf="assets/certificates/certificado-2.pdf" data-name="Certificado 2">
+              <span class="cert-badge">02</span>
+              <span class="cert-info">
+                <strong>Certificado de ejemplo 2</strong>
+                <small>Conferencia / Congreso — 2023</small>
+              </span>
+              <span class="cert-arrow">›</span>
+            </button>
+          </li>
+          <li>
+            <button class="cert-item" data-pdf="assets/certificates/certificado-3.pdf" data-name="Certificado 3">
+              <span class="cert-badge">03</span>
+              <span class="cert-info">
+                <strong>Certificado de ejemplo 3</strong>
+                <small>Reconocimiento / Distinción — 2023</small>
+              </span>
+              <span class="cert-arrow">›</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: ARTICULOS ============== -->
+  <div class="modal" id="modal-articulos" role="dialog" aria-modal="true" aria-labelledby="art-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window modal-window-wide">
+      <header class="modal-head">
+        <h2 id="art-title">Artículos</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-intro">Lista de publicaciones. Haz clic en un artículo para ver la vista previa del PDF.</p>
+        <ul class="article-list">
+          <li>
+            <button class="article-item" data-pdf="assets/articles/articulo-1.pdf" data-name="Título del artículo 1 (ejemplo)">
+              <span class="article-year">2024</span>
+              <span class="article-info">
+                <strong>Título del artículo 1 (ejemplo)</strong>
+                <small>Revista indexada · DOI: 10.xxxx/xxxxx</small>
+              </span>
+              <span class="article-arrow">›</span>
+            </button>
+          </li>
+          <li>
+            <button class="article-item" data-pdf="assets/articles/articulo-2.pdf" data-name="Título del artículo 2 (ejemplo)">
+              <span class="article-year">2023</span>
+              <span class="article-info">
+                <strong>Título del artículo 2 (ejemplo)</strong>
+                <small>Conferencia internacional · Proceedings</small>
+              </span>
+              <span class="article-arrow">›</span>
+            </button>
+          </li>
+          <li>
+            <button class="article-item" data-pdf="assets/articles/articulo-3.pdf" data-name="Título del artículo 3 (ejemplo)">
+              <span class="article-year">2023</span>
+              <span class="article-info">
+                <strong>Título del artículo 3 (ejemplo)</strong>
+                <small>Capítulo de libro · Editorial XYZ</small>
+              </span>
+              <span class="article-arrow">›</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: INVESTIGACION ============== -->
+  <div class="modal" id="modal-investigacion" role="dialog" aria-modal="true" aria-labelledby="inv-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window">
+      <header class="modal-head">
+        <h2 id="inv-title">Proyecto de Investigación</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body pdf-body">
+        <iframe src="assets/research/proyecto.pdf#toolbar=1" title="Vista previa del proyecto de investigación"></iframe>
+      </div>
+      <footer class="modal-foot">
+        <a class="btn btn-primary" href="assets/research/proyecto.pdf" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+        <a class="btn btn-ghost" href="assets/research/proyecto.pdf" download>Descargar PDF</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: PERFILES PROFESIONALES ============== -->
+  <div class="modal" id="modal-perfiles" role="dialog" aria-modal="true" aria-labelledby="perf-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window">
+      <header class="modal-head">
+        <h2 id="perf-title">Perfiles profesionales</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-intro">Encuentra mi presencia académica y profesional en estas plataformas.</p>
+        <div class="profiles-grid">
+          <a class="profile-card" href="#" target="_blank" rel="noopener">
+            <span class="profile-icon">in</span>
+            <strong>LinkedIn</strong>
+            <small>linkedin.com/in/tu-usuario</small>
+          </a>
+          <a class="profile-card" href="#" target="_blank" rel="noopener">
+            <span class="profile-icon">🎓</span>
+            <strong>ORCID</strong>
+            <small>orcid.org/0000-0000-0000-0000</small>
+          </a>
+          <a class="profile-card" href="#" target="_blank" rel="noopener">
+            <span class="profile-icon">📖</span>
+            <strong>Google Scholar</strong>
+            <small>scholar.google.com/citations?user=...</small>
+          </a>
+          <a class="profile-card" href="#" target="_blank" rel="noopener">
+            <span class="profile-icon">🧪</span>
+            <strong>ResearchGate</strong>
+            <small>researchgate.net/profile/...</small>
+          </a>
+          <a class="profile-card" href="#" target="_blank" rel="noopener">
+            <span class="profile-icon">🐙</span>
+            <strong>GitHub</strong>
+            <small>github.com/tu-usuario</small>
+          </a>
+          <a class="profile-card" href="#" target="_blank" rel="noopener">
+            <span class="profile-icon">🐦</span>
+            <strong>Twitter / X</strong>
+            <small>@tu-usuario</small>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: CONTACTO ============== -->
+  <div class="modal" id="modal-contacto" role="dialog" aria-modal="true" aria-labelledby="cont-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window">
+      <header class="modal-head">
+        <h2 id="cont-title">Contacto</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body">
+        <p class="modal-intro">¿Interesado en colaborar, escribirme o conocer más sobre mi trabajo? Usa cualquiera de estos canales.</p>
+        <ul class="contact-list">
+          <li><span>✉️</span><a href="mailto:tu.correo@ejemplo.com">tu.correo@ejemplo.com</a></li>
+          <li><span>💼</span><a href="#" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><span>🎓</span><a href="#" target="_blank" rel="noopener">ORCID</a></li>
+          <li><span>📍</span><span>Ciudad, País</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============== MODAL: GENERIC PDF VIEWER (used for certs & articles) ============== -->
+  <div class="modal" id="modal-pdf" role="dialog" aria-modal="true" aria-labelledby="pdf-title" hidden>
+    <div class="modal-overlay" data-close></div>
+    <div class="modal-window">
+      <header class="modal-head">
+        <h2 id="pdf-title">Vista previa</h2>
+        <button class="modal-close" data-close aria-label="Cerrar">×</button>
+      </header>
+      <div class="modal-body pdf-body">
+        <iframe id="pdfFrame" src="about:blank" title="Vista previa de PDF"></iframe>
+      </div>
+      <footer class="modal-foot">
+        <a class="btn btn-primary" id="pdfOpen" href="#" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
+        <a class="btn btn-ghost" id="pdfDownload" href="#" download>Descargar PDF</a>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ============== AUDIO ============== -->
+  <!--
+    Pista libre de derechos de SoundHelix (instrumental).
+    Para usar tu propia cancion: descarga un MP3/OGG y reemplazalo en esta ruta,
+    o cambia el atributo src por otra URL libre de derechos.
+  -->
+  <audio id="bgAudio" loop preload="auto">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script src="script.js"></script>
+</body>
+</html>
