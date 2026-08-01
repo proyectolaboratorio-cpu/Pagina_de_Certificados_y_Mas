@@ -162,13 +162,18 @@
         <h2 id="cv-title">Curriculum Vitae</h2>
         <button class="modal-close" data-close aria-label="Cerrar">×</button>
       </header>
-      <div class="modal-body pdf-body">
-        <iframe src="assets/cv/cv.pdf#toolbar=1" title="Vista previa del CV"></iframe>
-      </div>
+      <!--<div class="modal-body pdf-body">-->
+        <!-- <iframe src="assets/cv/cv.pdf#toolbar=0&navpanes=0&scrollbar=0" title="Vista previa del CV"></iframe> -->
+        <div class="modal-body pdf-body pdf-canvas-container" data-pdf="assets/cv/cv.pdf">
+          <div class="pdf-placeholder">Cargando CV...</div>
+        </div>
+      <!--</div>-->
+      <!-- estas 4 lineas habilitan las opciones de abrir en nueva pestaña y descargar el CV, puedes comentarlas si no quieres que aparezcan 
       <footer class="modal-foot">
         <a class="btn btn-primary" href="assets/cv/cv.pdf" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
         <a class="btn btn-ghost" href="assets/cv/cv.pdf" download>Descargar CV</a>
       </footer>
+      -->
     </div>
   </div>
 
@@ -271,13 +276,20 @@
         <h2 id="inv-title">Proyecto de Investigación</h2>
         <button class="modal-close" data-close aria-label="Cerrar">×</button>
       </header>
+    <!--
       <div class="modal-body pdf-body">
-        <iframe src="assets/research/proyecto.pdf#toolbar=1" title="Vista previa del proyecto de investigación"></iframe>
+        <iframe src="assets/research/proyecto.pdf#toolbar=0&navpanes=0&scrollbar=0" title="Vista previa del proyecto de investigación"></iframe>
       </div>
+    -->
+      <div class="modal-body pdf-body pdf-canvas-container" data-pdf="assets/research/proyecto.pdf">
+        <div class="pdf-placeholder">Cargando proyecto...</div>
+      </div>
+      <!-- estas 4 lineas habilitan las opciones de abrir en nueva pestaña y descargar el CV.
       <footer class="modal-foot">
         <a class="btn btn-primary" href="assets/research/proyecto.pdf" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
         <a class="btn btn-ghost" href="assets/research/proyecto.pdf" download>Descargar PDF</a>
       </footer>
+     -->
     </div>
   </div>
 
@@ -355,13 +367,20 @@
         <h2 id="pdf-title">Vista previa</h2>
         <button class="modal-close" data-close aria-label="Cerrar">×</button>
       </header>
+    <!-- 
       <div class="modal-body pdf-body">
         <iframe id="pdfFrame" src="about:blank" title="Vista previa de PDF"></iframe>
       </div>
+    -->
+      <div class="modal-body pdf-body pdf-canvas-container">
+        <div class="pdf-placeholder">Cargando PDF...</div>
+      </div>
+    <!-- estas 4 lineas habilitan las opciones de abrir en nueva pestaña y descargar el CV, de los certificados y articulos. 
       <footer class="modal-foot">
         <a class="btn btn-primary" id="pdfOpen" href="#" target="_blank" rel="noopener">Abrir en pestaña nueva</a>
         <a class="btn btn-ghost" id="pdfDownload" href="#" download>Descargar PDF</a>
       </footer>
+    -->
     </div>
   </div>
 
@@ -379,6 +398,7 @@
   <audio id="bgAudio" loop preload="auto" muted>
    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
   </audio> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

@@ -49,6 +49,13 @@
     if (opener) {
       e.preventDefault();
       openModal(opener.dataset.open);
+
+      // 👇 ESTE BLOQUE NUEVO
+      if (opener.dataset.open === 'cv' || opener.dataset.open === 'investigacion') {
+        const modal = document.getElementById(`modal-${opener.dataset.open}`);
+        const c = modal?.querySelector('.pdf-canvas-container');
+        if (c?.dataset.pdf) renderPdfToCanvas(c.dataset.pdf, c);
+      }
     }
   });
 
@@ -68,19 +75,56 @@
   /* =========================================
      VISOR DE PDFs (certificados y artículos)
      ========================================= */
-  const pdfFrame     = $('#pdfFrame');
-  const pdfOpenLink  = $('#pdfOpen');
-  const pdfDlLink    = $('#pdfDownload');
+ 
+     
+  
   const pdfTitleEl   = $('#pdf-title');
-
+  /*
   function viewPdf(pdfPath, displayName) {
     if (!pdfFrame) return;
-    pdfFrame.src = `${pdfPath}#toolbar=1`;
-    if (pdfOpenLink) pdfOpenLink.href = pdfPath;
-    if (pdfDlLink)   pdfDlLink.href   = pdfPath;
+    pdfFrame.src = `${pdfPath}#toolbar=0&navpanes=0&scrollbar=0`;
     if (pdfTitleEl)  pdfTitleEl.textContent = displayName || 'Vista previa';
     openModal('pdf');
   }
+  */
+  async function renderPdfToCanvas(pdfPath, container) {
+  container.innerHTML = '<div class="pdf-placeholder">Cargando PDF...</div>';
+
+  // Configurar worker
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+  try {
+    const pdf = await pdfjsLib.getDocument(pdfPath).promise;
+    container.innerHTML = '';
+
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const viewport = page.getViewport({ scale: 3 }); // Ajusta el factor de escala según sea necesario
+
+      const canvas = document.createElement('canvas');
+      canvas.className = 'pdf-page';
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+
+      const ctx = canvas.getContext('2d');
+      container.appendChild(canvas);
+
+      await page.render({ canvasContext: ctx, viewport }).promise;
+    }
+  } catch (e) {
+    container.innerHTML = '<div class="pdf-placeholder">Error al cargar el PDF.</div>';
+    console.error(e);
+  }
+}
+
+function viewPdf(pdfPath, displayName) {
+  const container = document.querySelector('#modal-pdf .pdf-canvas-container');
+  if (!container) return;
+  if (pdfTitleEl) pdfTitleEl.textContent = displayName || 'Vista previa';
+  openModal('pdf');
+  renderPdfToCanvas(pdfPath, container);
+}
 
   // Click en un certificado
   $$('.cert-item').forEach((btn) => {
