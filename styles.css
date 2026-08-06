@@ -548,7 +548,7 @@ button {
 .modal-body.pdf-body {
   padding: 0;
   background: #1f2937;
-  display: flex;
+  display: block;            /* ← CAMBIO (era flex) */
 }
 
 .modal-body.pdf-body iframe {
@@ -895,10 +895,11 @@ body.modal-open { overflow: hidden; }
 .pdf-page {
   display: block;
   margin: 0 auto 10px;
-  max-width: 100%;
+  width: 100%;               
+  height: auto;              
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   user-select: none;
-  pointer-events: none; /* bloquea clic derecho, arrastrar, etc. */
+  pointer-events: none;
 }
 .pdf-placeholder {
   text-align: center;

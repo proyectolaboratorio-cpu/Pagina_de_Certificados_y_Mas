@@ -215,7 +215,7 @@
     openModal('pdf');
   }
   */
-  async function renderPdfToCanvas(pdfPath, container, scale = 3) {   // ← CAMBIO: agregamos scale = 3
+  async function renderPdfToCanvas(pdfPath, container, scale = 1) {   // ← CAMBIO: agregamos scale = 3
     container.dataset.rendering = '1';                               // ← NUEVO: candado anti-carrera
     container.innerHTML = '<div class="pdf-placeholder">Cargando PDF...</div>';
     container._currentPdfPath = pdfPath;                             // ← NUEVO: guardar qué PDF está aquí
@@ -228,9 +228,20 @@
       const pdf = await pdfjsLib.getDocument(pdfPath).promise;
       container.innerHTML = '';
 
+      // Calcular escala UNA vez antes del loop (basada en la 1ra página)
+      // que ocupe el ancho del contenedor, con calidad retina
+      const dpr = window.devicePixelRatio || 1;
+      const containerWidth = container.clientWidth || 600;
+      // Tomamos la primera página para sacar el ancho base del PDF
+      const firstPage = await pdf.getPage(1);
+      const baseVp = firstPage.getViewport({ scale: 1 });
+      const baseScale = (containerWidth / baseVp.width) * dpr;
+      // 'scale' que viene como parámetro ahora es un FACTOR DE ZOOM (1 = ajustar al ancho)
+      const finalScale = baseScale * scale;
+
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
-        const viewport = page.getViewport({ scale });   // ← CAMBIO: era scale: 3 fijo
+        const viewport = page.getViewport({ scale: finalScale });
 
         const canvas = document.createElement('canvas');
         canvas.className = 'pdf-page';
@@ -283,7 +294,7 @@ function viewPdf(pdfPath, displayName) {
     if (container.dataset.zoomReady === '1') return;   // evita duplicar listeners
     container.dataset.zoomReady = '1';
 
-    let currentScale = 3;   // escala inicial (igual a la que usa renderPdfToCanvas por defecto)
+    let currentScale = 1;   // 1 = ajustar al ancho del contenedor
 
     container.addEventListener('wheel', (e) => {
       // No hacer nada si no hay PDF cargado todavía, o si ya hay un re-render en curso
@@ -322,6 +333,17 @@ function viewPdf(pdfPath, displayName) {
         }, 1200);
       }
     }, { passive: false });
+
+        // Doble click sobre el PDF = volver al 100%
+    container.addEventListener('dblclick', (e) => {
+      if (!container.querySelector('canvas')) return;
+      e.preventDefault();
+      currentScale = 1;
+      const pdfPath = container.dataset.pdf || container._currentPdfPath;
+      if (pdfPath) renderPdfToCanvas(pdfPath, container, currentScale);
+    });
+
+
   }
 
 
