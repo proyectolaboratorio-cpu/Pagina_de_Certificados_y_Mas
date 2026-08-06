@@ -215,36 +215,40 @@
     openModal('pdf');
   }
   */
-  async function renderPdfToCanvas(pdfPath, container) {
-  container.innerHTML = '<div class="pdf-placeholder">Cargando PDF...</div>';
+  async function renderPdfToCanvas(pdfPath, container, scale = 3) {   // ← CAMBIO: agregamos scale = 3
+    container.dataset.rendering = '1';                               // ← NUEVO: candado anti-carrera
+    container.innerHTML = '<div class="pdf-placeholder">Cargando PDF...</div>';
+    container._currentPdfPath = pdfPath;                             // ← NUEVO: guardar qué PDF está aquí
 
-  // Configurar worker
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    // Configurar worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-  try {
-    const pdf = await pdfjsLib.getDocument(pdfPath).promise;
-    container.innerHTML = '';
+    try {
+      const pdf = await pdfjsLib.getDocument(pdfPath).promise;
+      container.innerHTML = '';
 
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const viewport = page.getViewport({ scale: 3 }); // Ajusta el factor de escala según sea necesario
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale });   // ← CAMBIO: era scale: 3 fijo
 
-      const canvas = document.createElement('canvas');
-      canvas.className = 'pdf-page';
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
+        const canvas = document.createElement('canvas');
+        canvas.className = 'pdf-page';
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
 
-      const ctx = canvas.getContext('2d');
-      container.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+        container.appendChild(canvas);
 
-      await page.render({ canvasContext: ctx, viewport }).promise;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+      }
+    } catch (e) {
+      container.innerHTML = '<div class="pdf-placeholder">Error al cargar el PDF.</div>';
+      console.error(e);
+    } finally {
+      container.dataset.rendering = '0';   // ← NUEVO: liberar el candado
     }
-  } catch (e) {
-    container.innerHTML = '<div class="pdf-placeholder">Error al cargar el PDF.</div>';
-    console.error(e);
   }
-}
 
 function viewPdf(pdfPath, displayName) {
   const container = document.querySelector('#modal-pdf .pdf-canvas-container');
@@ -267,6 +271,63 @@ function viewPdf(pdfPath, displayName) {
       viewPdf(btn.dataset.pdf, btn.dataset.name);
     });
   });
+
+
+    /* =========================================
+     ZOOM con la rueda del mouse sobre el PDF
+     - Solo se activa cuando el mouse está sobre .pdf-canvas-container
+     - Re-renderiza el PDF a una escala mayor/menor
+     - Funciona en los 3 modales con PDF: CV, Investigación, visor genérico
+     ========================================= */
+  function setupPdfZoom(container) {
+    if (container.dataset.zoomReady === '1') return;   // evita duplicar listeners
+    container.dataset.zoomReady = '1';
+
+    let currentScale = 3;   // escala inicial (igual a la que usa renderPdfToCanvas por defecto)
+
+    container.addEventListener('wheel', (e) => {
+      // No hacer nada si no hay PDF cargado todavía, o si ya hay un re-render en curso
+      if (!container.querySelector('canvas')) return;
+      if (container.dataset.rendering === '1') return;
+
+      e.preventDefault();   // evita que la página haga scroll mientras hacemos zoom
+
+      const delta = -e.deltaY;            // rueda hacia arriba = zoom in
+      const factor = delta > 0 ? 1.15 : 1 / 1.15;
+      const newScale = Math.min(8, Math.max(0.5, currentScale * factor));
+
+      if (newScale === currentScale) return;   // ya estamos en el límite
+      currentScale = newScale;
+
+      // Determinar qué PDF re-renderizar:
+      // - modal-cv y modal-investigacion: el path viene en data-pdf del HTML
+      // - modal-pdf (certs/artículos): el path se guardó en _currentPdfPath
+      const pdfPath = container.dataset.pdf || container._currentPdfPath;
+      if (pdfPath) {
+        renderPdfToCanvas(pdfPath, container, currentScale);
+
+        // 👇 Mostrar indicador "150%" (requiere el CSS de arriba)
+        let indicator = container.querySelector('.pdf-zoom-indicator');
+        if (!indicator) {
+          indicator = document.createElement('div');
+          indicator.className = 'pdf-zoom-indicator';
+          container.appendChild(indicator);
+        }
+        indicator.textContent = Math.round(currentScale * 33.33) + '%';
+        // (la escala inicial 3 ≈ 100%; ajustá el 33.33 si querés otro "100% base")
+        indicator.classList.add('is-visible');
+        clearTimeout(indicator._hideTimer);
+        indicator._hideTimer = setTimeout(() => {
+          indicator.classList.remove('is-visible');
+        }, 1200);
+      }
+    }, { passive: false });
+  }
+
+
+
+
+
 
   /* =========================================
      MENÚ MÓVIL
@@ -417,6 +478,12 @@ function viewPdf(pdfPath, displayName) {
     if (label) label.textContent = `${v}%`;
   });
 } 
+
+
+ /* =========================================
+     ZOOM: activar rueda en los 3 contenedores PDF
+     ========================================= */
+  $$('.pdf-canvas-container').forEach(setupPdfZoom);
 
   /* =========================================
      FOOTER — Año dinámico
