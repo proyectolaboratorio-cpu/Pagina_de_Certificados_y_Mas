@@ -26,6 +26,12 @@
     // focus al cerrar
     const closeBtn = modal.querySelector('[data-close]');
     setTimeout(() => closeBtn?.focus(), 50);
+
+    const win = modal.querySelector('.modal-window');
+    if (win) {
+      makeWindowInteractive(win);
+      makeWindowResizable(win);
+    }
   }
 
   function closeModal(modal) {
@@ -42,6 +48,128 @@
     const modal = modalStack[modalStack.length - 1];
     if (modal) closeModal(modal);
   }
+
+
+    /* =========================================
+     DRAG: arrastrar la ventana desde el header
+     ========================================= */
+  function makeWindowInteractive(windowEl) {
+    const head = windowEl.querySelector('.modal-head');
+    if (!head || head.dataset.draggable === '1') return;   // evita duplicar listeners
+    head.dataset.draggable = '1';
+
+    let startX = 0, startY = 0, startLeft = 0, startTop = 0, isDragging = false;
+
+    head.addEventListener('mousedown', (e) => {
+      // No iniciar drag si se hace click en el botón cerrar
+      if (e.target.closest('.modal-close')) return;
+      isDragging = true;
+      const rect = windowEl.getBoundingClientRect();
+      startX    = e.clientX;
+      startY    = e.clientY;
+      startLeft = rect.left;
+      startTop  = rect.top;
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      windowEl.style.left      = (startLeft + dx) + 'px';
+      windowEl.style.top       = (startTop  + dy) + 'px';
+      windowEl.style.transform = 'none';   // desactivar el centrado tras arrastrar
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      document.body.style.userSelect = '';
+    });
+  }
+
+    /* =========================================
+     RESIZE: 8 handles invisibles (4 lados + 4 esquinas)
+     Crea los <span> con clase .resize-handle dentro de la ventana
+     ========================================= */
+  function makeWindowResizable(windowEl) {
+    if (windowEl.dataset.resizable === '1') return;   // evita duplicar
+    windowEl.dataset.resizable = '1';
+
+    const directions = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'];
+
+    directions.forEach((dir) => {
+      const handle = document.createElement('span');
+      handle.className = `resize-handle resize-handle-${dir}`;
+      windowEl.appendChild(handle);
+
+      handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        e.stopPropagation();   // no disparar el drag del header
+
+        const startX = e.clientX;
+        const startY = e.clientY;
+        const startLeft   = windowEl.offsetLeft;
+        const startTop    = windowEl.offsetTop;
+        const startWidth  = windowEl.offsetWidth;
+        const startHeight = windowEl.offsetHeight;
+
+        // desactivar centrado inicial al empezar a redimensionar
+        windowEl.style.transform = 'none';
+
+        // leer tamaños mínimos del CSS
+        const cs = getComputedStyle(windowEl);
+        const minW = parseInt(cs.minWidth,  10) || 320;
+        const minH = parseInt(cs.minHeight, 10) || 240;
+
+        document.body.style.userSelect = 'none';
+
+        function onMove(e) {
+          const dx = e.clientX - startX;
+          const dy = e.clientY - startY;
+
+          let newLeft   = startLeft;
+          let newTop    = startTop;
+          let newWidth  = startWidth;
+          let newHeight = startHeight;
+
+          if (dir.includes('e')) {
+            newWidth = Math.max(minW, startWidth + dx);
+          }
+          if (dir.includes('s')) {
+            newHeight = Math.max(minH, startHeight + dy);
+          }
+          if (dir.includes('w')) {
+            const w = Math.max(minW, startWidth - dx);
+            newLeft  = startLeft + (startWidth - w);
+            newWidth = w;
+          }
+          if (dir.includes('n')) {
+            const h = Math.max(minH, startHeight - dy);
+            newTop    = startTop + (startHeight - h);
+            newHeight = h;
+          }
+
+          windowEl.style.left   = newLeft   + 'px';
+          windowEl.style.top    = newTop    + 'px';
+          windowEl.style.width  = newWidth  + 'px';
+          windowEl.style.height = newHeight + 'px';
+        }
+
+        function onUp() {
+          document.removeEventListener('mousemove', onMove);
+          document.removeEventListener('mouseup', onUp);
+          document.body.style.userSelect = '';
+        }
+
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+      });
+    });
+  }
+
+
 
   // Abrir por data-open
   document.addEventListener('click', (e) => {

@@ -488,10 +488,15 @@ button {
 }
 
 .modal-window {
-  position: relative;
+  position: absolute;                         /* CAMBIO (era relative) */
+  top: 50%;                                   /* NUEVO: centrado al abrir */
+  left: 50%;                                  /* NUEVO */
+  transform: translate(-50%, -50%);           /* NUEVO: truco para centrar */
   z-index: 1;
-  width: min(820px, 100%);
+  width: min(820px, calc(100% - 48px));       /* CAMBIO (margen lateral) */
   max-height: 88vh;
+  min-width: 320px;                           /* NUEVO */
+  min-height: 240px;                          /* NUEVO */
   background: var(--surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
@@ -510,6 +515,8 @@ button {
   padding: 20px 24px;
   border-bottom: 1px solid var(--line);
   background: var(--surface);
+  cursor: move;         
+  user-select: none;     
 }
 
 .modal-head h2 {
@@ -859,6 +866,31 @@ body.modal-open { overflow: hidden; }
   .hero-stats { grid-template-columns: 1fr; gap: 12px; }
   .hero-card-inner { padding: 24px 20px; }
 }
+
+
+/* =========================================
+   RESIZE HANDLES (8 direcciones, estilo profesional)
+   Los crea el JS como <span> dentro de .modal-window
+   ========================================= */
+.resize-handle {
+  position: absolute;
+  z-index: 3;
+  /* totalmente invisibles — solo cambia el cursor al pasar por encima */
+  background: transparent;
+}
+
+/* 4 lados */
+.resize-handle-n  { top: 0;    left: 12px;    right: 12px;   height: 6px;  cursor: ns-resize; }
+.resize-handle-s  { bottom: 0; left: 12px;    right: 12px;   height: 6px;  cursor: ns-resize; }
+.resize-handle-e  { right: 0;  top: 12px;     bottom: 12px;  width: 6px;   cursor: ew-resize; }
+.resize-handle-w  { left: 0;   top: 12px;     bottom: 12px;  width: 6px;   cursor: ew-resize; }
+
+/* 4 esquinas (un poquito más grandes para que sea más cómodo agarrarlas) */
+.resize-handle-ne { top: 0;    right: 0;      width: 14px;   height: 14px; cursor: nesw-resize; }
+.resize-handle-nw { top: 0;    left: 0;       width: 14px;   height: 14px; cursor: nwse-resize; }
+.resize-handle-se { bottom: 0; right: 0;      width: 14px;   height: 14px; cursor: nwse-resize; }
+.resize-handle-sw { bottom: 0; left: 0;       width: 14px;   height: 14px; cursor: nesw-resize; }
+
 
 .pdf-page {
   display: block;
