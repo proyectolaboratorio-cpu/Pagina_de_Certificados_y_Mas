@@ -549,6 +549,14 @@ button {
   padding: 0;
   background: #1f2937;
   display: block;            /* ← CAMBIO (era flex) */
+  overflow: auto;
+  cursor: grab;
+  overscroll-behavior: contain;
+  user-select: none;
+}
+
+.modal-body.pdf-body.is-panning {
+  cursor: grabbing;
 }
 
 .modal-body.pdf-body iframe {
@@ -895,7 +903,8 @@ body.modal-open { overflow: hidden; }
 .pdf-page {
   display: block;
   margin: 0 auto 10px;
-  width: 100%;               
+  width: auto;
+  max-width: none;
   height: auto;              
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   user-select: none;

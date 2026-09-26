@@ -182,7 +182,10 @@
       if (opener.dataset.open === 'cv' || opener.dataset.open === 'investigacion') {
         const modal = document.getElementById(`modal-${opener.dataset.open}`);
         const c = modal?.querySelector('.pdf-canvas-container');
-        if (c?.dataset.pdf) renderPdfToCanvas(c.dataset.pdf, c);
+        if (c?.dataset.pdf) {
+          c._resetPdfZoom?.();
+          renderPdfToCanvas(c.dataset.pdf, c);
+        }
       }
     }
   });
@@ -215,10 +218,18 @@
     openModal('pdf');
   }
   */
-  async function renderPdfToCanvas(pdfPath, container, scale = 1) {   // ← CAMBIO: agregamos scale = 3
-    container.dataset.rendering = '1';                               // ← NUEVO: candado anti-carrera
-    container.innerHTML = '<div class="pdf-placeholder">Cargando PDF...</div>';
-    container._currentPdfPath = pdfPath;                             // ← NUEVO: guardar qué PDF está aquí
+  async function renderPdfToCanvas(pdfPath, container, scale = 1) {
+    if (container.dataset.rendering === '1') {
+      container._pendingRender = { pdfPath, scale };
+      return;
+    }
+
+    container.dataset.rendering = '1';
+    container._currentPdfPath = pdfPath;
+    const oldPages = Array.from(container.querySelectorAll('.pdf-page'));
+    if (!oldPages.length) {
+      container.innerHTML = '<div class="pdf-placeholder">Cargando PDF...</div>';
+    }
 
     // Configurar worker
     pdfjsLib.GlobalWorkerOptions.workerSrc =
@@ -226,18 +237,16 @@
 
     try {
       const pdf = await pdfjsLib.getDocument(pdfPath).promise;
-      container.innerHTML = '';
 
-      // Calcular escala UNA vez antes del loop (basada en la 1ra página)
-      // que ocupe el ancho del contenedor, con calidad retina
-      const dpr = window.devicePixelRatio || 1;
+      // Calcular la escala base para que el PDF ocupe el ancho disponible.
       const containerWidth = container.clientWidth || 600;
       // Tomamos la primera página para sacar el ancho base del PDF
       const firstPage = await pdf.getPage(1);
       const baseVp = firstPage.getViewport({ scale: 1 });
-      const baseScale = (containerWidth / baseVp.width) * dpr;
+      const baseScale = containerWidth / baseVp.width;
       // 'scale' que viene como parámetro ahora es un FACTOR DE ZOOM (1 = ajustar al ancho)
       const finalScale = baseScale * scale;
+      const newPages = [];
 
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
@@ -249,15 +258,25 @@
         canvas.height = viewport.height;
 
         const ctx = canvas.getContext('2d');
-        container.appendChild(canvas);
-
         await page.render({ canvasContext: ctx, viewport }).promise;
+        newPages.push(canvas);
       }
+
+      oldPages.forEach((page) => page.remove());
+      container.querySelector('.pdf-placeholder')?.remove();
+      newPages.forEach((page) => container.appendChild(page));
     } catch (e) {
-      container.innerHTML = '<div class="pdf-placeholder">Error al cargar el PDF.</div>';
+      if (!oldPages.length) {
+        container.innerHTML = '<div class="pdf-placeholder">Error al cargar el PDF.</div>';
+      }
       console.error(e);
     } finally {
-      container.dataset.rendering = '0';   // ← NUEVO: liberar el candado
+      container.dataset.rendering = '0';
+      const pendingRender = container._pendingRender;
+      container._pendingRender = null;
+      if (pendingRender) {
+        renderPdfToCanvas(pendingRender.pdfPath, container, pendingRender.scale);
+      }
     }
   }
 
@@ -266,6 +285,7 @@ function viewPdf(pdfPath, displayName) {
   if (!container) return;
   if (pdfTitleEl) pdfTitleEl.textContent = displayName || 'Vista previa';
   openModal('pdf');
+  container._resetPdfZoom?.();
   renderPdfToCanvas(pdfPath, container);
 }
 
@@ -296,10 +316,16 @@ function viewPdf(pdfPath, displayName) {
 
     let currentScale = 1;   // 1 = ajustar al ancho del contenedor
 
+    container._resetPdfZoom = () => {
+      currentScale = 1;
+      container.scrollLeft = 0;
+      container.scrollTop = 0;
+      container.querySelector('.pdf-zoom-indicator')?.classList.remove('is-visible');
+    };
+
     container.addEventListener('wheel', (e) => {
-      // No hacer nada si no hay PDF cargado todavía, o si ya hay un re-render en curso
+      // No hacer nada si todavía no hay PDF cargado.
       if (!container.querySelector('canvas')) return;
-      if (container.dataset.rendering === '1') return;
 
       e.preventDefault();   // evita que la página haga scroll mientras hacemos zoom
 
@@ -317,15 +343,14 @@ function viewPdf(pdfPath, displayName) {
       if (pdfPath) {
         renderPdfToCanvas(pdfPath, container, currentScale);
 
-        // 👇 Mostrar indicador "150%" (requiere el CSS de arriba)
+        // Mostrar el porcentaje real del zoom aplicado.
         let indicator = container.querySelector('.pdf-zoom-indicator');
         if (!indicator) {
           indicator = document.createElement('div');
           indicator.className = 'pdf-zoom-indicator';
           container.appendChild(indicator);
         }
-        indicator.textContent = Math.round(currentScale * 33.33) + '%';
-        // (la escala inicial 3 ≈ 100%; ajustá el 33.33 si querés otro "100% base")
+        indicator.textContent = Math.round(currentScale * 100) + '%';
         indicator.classList.add('is-visible');
         clearTimeout(indicator._hideTimer);
         indicator._hideTimer = setTimeout(() => {
@@ -333,6 +358,37 @@ function viewPdf(pdfPath, displayName) {
         }, 1200);
       }
     }, { passive: false });
+
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+    let startScrollLeft = 0;
+    let startScrollTop = 0;
+
+    container.addEventListener('mousedown', (e) => {
+      if (e.button !== 0 || !container.querySelector('canvas')) return;
+      isPanning = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      startScrollLeft = container.scrollLeft;
+      startScrollTop = container.scrollTop;
+      container.classList.add('is-panning');
+      e.preventDefault();
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      container.scrollLeft = startScrollLeft - (e.clientX - startX);
+      container.scrollTop = startScrollTop - (e.clientY - startY);
+    });
+
+    const stopPanning = () => {
+      isPanning = false;
+      container.classList.remove('is-panning');
+    };
+
+    container.addEventListener('mouseup', stopPanning);
+    container.addEventListener('mouseleave', stopPanning);
 
         // Doble click sobre el PDF = volver al 100%
     container.addEventListener('dblclick', (e) => {
